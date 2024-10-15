@@ -10,3 +10,9 @@ class PACKET_BASE(LittleEndianStructure) :
         ("type", WORD),
         ("serial", WORD),
     ]
+
+class PACKET_SERVER_TYPE(PACKET_BASE) :
+    _pack_ = 1
+    _fields_ = [
+        ("server_type", WORD),
+    ]
