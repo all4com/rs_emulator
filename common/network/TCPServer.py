@@ -1,3 +1,5 @@
+# TODO: start using asyncio instead of threading
+
 import threading
 import socket
 from common.helpers import print_binary
