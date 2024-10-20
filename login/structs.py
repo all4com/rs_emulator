@@ -52,6 +52,7 @@ class CL_LOGIN(LittleEndianStructure):
         ("security_code_2", WORD),
         ("token", CHAR * 64)
     ]
+
     def __init__(self) -> None:
         self.client_version = 0
         self.username = b''
@@ -65,3 +66,5 @@ class CL_LOGIN(LittleEndianStructure):
         self.security_code_1 = 0
         self.security_code_2 = 0
         self.token = b''
+
+    

@@ -1,8 +1,8 @@
-import socket
+import asyncio
 class DUMMY :
 
     type = 0x1000
 
     @staticmethod
-    def intercept(client_socket: socket.socket, buffer: bytes) -> None :
+    async def intercept(client_socket: asyncio.StreamWriter, buffer: bytes) -> None :
         print("Pacote dummy interceptado")
