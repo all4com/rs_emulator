@@ -1,6 +1,8 @@
 import socket
+from common.helpers import print_binary
 import common.state as state
-from common.network.packets.login_packets import PACKET_SERVER_TYPE
+from common.network.packets.regular import PACKET_SERVER_TYPE
+from login.login_service import LoginService
 
 class SERVER_TYPE :
 
@@ -8,7 +10,13 @@ class SERVER_TYPE :
 
     @staticmethod
     def intercept(client_socket: socket.socket, buffer: bytes) -> None :
+        loginService = LoginService()
+        loginService.register_server("Prandel", 0)
+        loginService.register_server("Nacriema", 1)
+        loginService.register_server("Mundo da chibata", 3)
+        loginService.register_server("GVG World 1", 4)
+        loginService.register_server("Test Server", 5)
+        
         packet = PACKET_SERVER_TYPE.from_buffer_copy(buffer)
-
-        print(state.players)
-        print(f"Server type is {packet.server_type}")
+        buff = loginService.get_server_list_buffer()
+        client_socket.send(loginService.get_server_list_buffer())

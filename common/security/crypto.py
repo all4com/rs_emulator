@@ -52,9 +52,9 @@ class CryptoUtils:
         decoded = []
         for byte in data:
             rand_a = rand.next(range_)
-            decoded_byte = byte - rand_a
+            decoded_byte = (byte - rand_a) & 0xFF 
             decoded.append(decoded_byte)
-        return bytes(decoded).decode('utf-8').rstrip('\x00')
+        return bytes(decoded)
 
     @staticmethod
     def generate_decode_key(seed: int) -> int:

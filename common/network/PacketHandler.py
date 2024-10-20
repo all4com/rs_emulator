@@ -1,4 +1,4 @@
-from common.network.packets.login_packets import PACKET_BASE
+from common.network.packets.regular import PACKET_BASE
 from common.helpers import int_to_little_endian_hex
 import socket
 class PacketHandler :
@@ -11,7 +11,7 @@ class PacketHandler :
 
     def execute_packet(self, client_socket: socket.socket, buffer: bytes) -> None:
         base = PACKET_BASE.from_buffer_copy(buffer)
-        if base.type in self.handlers :
-            self.handlers[base.type](client_socket, buffer)
+        if base.packet_type in self.handlers :
+            self.handlers[base.packet_type](client_socket, buffer)
         else :
-            print(f"Packet type {int_to_little_endian_hex(base.type)} not implemented")
+            print(f"Packet type {int_to_little_endian_hex(base.packet_type)} not implemented")

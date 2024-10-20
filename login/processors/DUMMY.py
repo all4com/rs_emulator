@@ -1,5 +1,4 @@
 import socket
-
 class DUMMY :
 
     type = 0x1000
