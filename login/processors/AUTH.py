@@ -2,8 +2,8 @@ import asyncio
 import common.state as state
 from common.security.crypto import CryptoUtils
 from common.helpers import print_binary
-from login.structs import CL_LOGIN
-
+from login.structs import CL_LOGIN, RESULT_LOGIN, AVATAR_LIST
+from ctypes import string_at, byref, sizeof
 class AUTH :
 
     type = 0x1001
@@ -28,6 +28,38 @@ class AUTH :
             state.user_model.insert({"username": username, "password": buffer.password.decode("utf-8")})
             print(username)
 
-             # search user from database
-        result = state.user_model.getByUsername(buffer.username.decode("utf-8"))
-        print(result)
+        input_username = buffer.username.decode("utf-8")
+        input_password = buffer.password.decode("utf-8")
+
+        # search user from database
+        result = state.user_model.getByUsername(input_username)
+        
+        result_login = RESULT_LOGIN()
+
+        if len(result) > 0 :
+            account = result[0]
+
+            db_username = account[0]
+            db_password = account[1]
+            db_is_banned = account[2]
+            db_banned_comment = account[3]
+            db_banned_data = account[4]
+
+            if db_is_banned == 1 :
+                print(db_banned_comment, db_banned_data, db_is_banned)
+                result_login.set_banned(int(db_banned_data), db_banned_comment)
+                result_buffer = string_at(byref(result_login), sizeof(RESULT_LOGIN()))
+                client_socket.write(result_buffer)
+            else :
+                if db_username == input_username and db_password == input_password :
+                    result_login.set_success()
+                    result_buffer = string_at(byref(result_login), sizeof(RESULT_LOGIN()))
+                    client_socket.write(result_buffer)
+
+                    # TODO: need to create table for avatars and apply the avatar logic here 
+                    avatar_list = AVATAR_LIST()
+                    avatar_list_buffer = string_at(byref(avatar_list), sizeof(AVATAR_LIST()))
+                    client_socket.write(avatar_list_buffer)
+                    
+                    await client_socket.drain()
+
