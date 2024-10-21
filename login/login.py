@@ -43,7 +43,7 @@ async def main():
 
     await asyncio.gather(
         server.listen(),
-        server.run_command_listener()
+        # server.run_command_listener()
     )
 
 if __name__ == "__main__" :
