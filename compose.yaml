@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  python:
+    build: .
+    container_name: PYTHON
+    volumes:
+      - '.:/work'
+    ports:
+      - 55661:55661
