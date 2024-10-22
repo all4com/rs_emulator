@@ -6,4 +6,4 @@
 
 ## login server exit
 
-curl http://127.0.0.1:8000/api/cmd?cmd=exit
+curl http://127.0.0.1/api/cmd?cmd=exit
