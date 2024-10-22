@@ -39,15 +39,13 @@ class TCPServer :
 
     async def command_server(self, websocket, path):
         async for command in websocket:
-            print(f"Received command: {command}")
-
+            response = f"ng: '{command}' is not found"
             if command == "exit":
                 # print("exit!")
                 for ws in self.clients.values():
                     await ws.close()
                 self.stop_event.set()
-
-            response = f"Command '{command}' executed successfully!"
+                response = f"ok: '{command}' executed"
             await websocket.send(response)
 
     async def run_command_listener(self):
