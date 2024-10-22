@@ -39,11 +39,11 @@ async def main():
     handlers.register_handler(AUTH.type, AUTH.intercept)
 
     # Initialize server
-    server = TCPServer("127.0.0.1", 55661, handlers)
+    server = TCPServer("0.0.0.0", 55661, handlers)
 
     await asyncio.gather(
         server.listen(),
-        # server.run_command_listener()
+        server.run_command_listener()
     )
 
 if __name__ == "__main__" :

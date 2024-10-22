@@ -1,4 +1,5 @@
 import asyncio
+import websockets
 from common.helpers import print_binary
 from common.network.TCPClient import TCPClient
 from common.network.PacketHandler import PacketHandler
@@ -36,14 +37,22 @@ class TCPServer :
             server.close()
             await server.wait_closed()
 
-    async def run_command_listener(self):
-        while True:
-            command = await asyncio.get_event_loop().run_in_executor(None, input, "Write a command: ")
+    async def command_server(self, websocket, path):
+        async for command in websocket:
+            response = f"ng: '{command}' is not found"
             if command == "exit":
-                for port, writer in self.clients.items():
-                    writer.close()
-                    await writer.wait_closed()
+                # print("exit!")
+                for ws in self.clients.values():
+                    await ws.close()
                 self.stop_event.set()
-                break
- 
+                response = f"ok: '{command}' executed"
+            await websocket.send(response)
+
+    async def run_command_listener(self):
+        server = await websockets.serve(self.command_server, "0.0.0.0", 8765)
+        print("WebSocket server started on port 8765")
+
+        await self.stop_event.wait()
+        server.close()
+        await server.wait_closed()
             
