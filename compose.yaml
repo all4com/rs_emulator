@@ -2,10 +2,10 @@ version: '3'
 
 services:
   python:
-    build: ./python
-    container_name: PYTHON
+    build: ./docker
+    container_name: rs_server
     volumes:
-      - '.:/work'
+      - './src:/work'
     ports:
       - 55661:55661
-    command: python -u -m login.login
+    command: /work/exec.sh
