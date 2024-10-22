@@ -1,12 +1,21 @@
 services:
-  rs_server:
+  login_server:
     build: ./docker/rs_server
-    container_name: rs_server
+    container_name: login_server
     volumes:
       - './src/rs_server:/work'
     ports:
       - "${LOGIN_SERVER_PORT}:${LOGIN_SERVER_PORT}"
     command: python -u -m login.login
+
+  game_server:
+    build: ./docker/rs_server
+    container_name: game_server
+    volumes:
+      - './src/rs_server:/work'
+    ports:
+      - "${GAME_SERVER_PORT}:${GAME_SERVER_PORT}"
+    command: python -u -m game.game
 
   api_server:
     build:
@@ -17,4 +26,5 @@ services:
     ports:
       - "${API_PORT}:8000"
     depends_on:
-      - rs_server
+      - login_server
+      - game_server
