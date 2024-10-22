@@ -2,9 +2,10 @@ version: '3'
 
 services:
   python:
-    build: .
+    build: ./python
     container_name: PYTHON
     volumes:
       - '.:/work'
     ports:
       - 55661:55661
+    command: python -u -m login.login
