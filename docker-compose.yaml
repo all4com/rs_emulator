@@ -2,9 +2,12 @@ services:
   login_server:
     build: ./docker/rs_server
     container_name: login_server
+    restart: always
     volumes:
       - '.:/work'
     working_dir: /work/src/rs_server
+    environment:
+      SERVER_NAME: login_server
     ports:
       - "${LOGIN_SERVER_PORT}:${LOGIN_SERVER_PORT}"
     command: python -u -m login.login
@@ -14,9 +17,12 @@ services:
   game_server:
     build: ./docker/rs_server
     container_name: game_server
+    restart: always
     volumes:
       - '.:/work'
     working_dir: /work/src/rs_server
+    environment:
+      SERVER_NAME: game_server
     ports:
       - "${GAME_SERVER_PORT}:${GAME_SERVER_PORT}"
     command: python -u -m game.game

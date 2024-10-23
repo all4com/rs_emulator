@@ -5,16 +5,23 @@ import websockets
 app = FastAPI()
 
 # WebSocket経由でPython WebSocketサーバーにコマンドを送信する関数
-async def send_command_to_websocket(command: str) -> str:
-    uri = "ws://rs_server:8765"  # WebSocketサーバーのURI
-    async with websockets.connect(uri) as websocket:
-        await websocket.send(command)
-        response = await websocket.recv()  # サーバーからのレスポンスを受け取る
-        return response
+async def send_command_to_websocket(command: str, server: str) -> str:
+    urls = []
+    if server == "":
+        urls.append("ws://login_server:8765")  # WebSocketサーバーのURI
+        urls.append("ws://game_server:8765")  # WebSocketサーバーのURI
+    else:
+        urls.append(f"ws://{server}:8765")  # WebSocketサーバーのURI
+    response = []
+    for url in urls:
+        async with websockets.connect(url) as websocket:
+            await websocket.send(command)
+            response.append(await websocket.recv())
+    return response
 
 # APIエンドポイント
 @app.get("/api/v1/commands/")
-async def send_command(cmd: str):
+async def send_command(cmd: str, srv: str = ""):
     # WebSocket経由でコマンドを送信し、レスポンスを取得
-    response = await send_command_to_websocket(cmd)
+    response = await send_command_to_websocket(cmd, srv)
     return {"result": response}
