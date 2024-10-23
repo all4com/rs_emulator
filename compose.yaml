@@ -3,6 +3,7 @@ version: '3'
 services:
   rs_server:
     build: ./docker/rs_server
+    restart: always
     container_name: rs_server
     volumes:
       - './src/rs_server:/work'
@@ -17,6 +18,6 @@ services:
     volumes:
       - './src/api_server:/work'
     ports:
-      - "80:8000"
+      - "8000:8000"
     depends_on:
       - rs_server
