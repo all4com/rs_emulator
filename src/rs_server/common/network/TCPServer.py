@@ -3,6 +3,7 @@ import websockets
 from common.helpers import print_binary
 from common.network.TCPClient import TCPClient
 from common.network.PacketHandler import PacketHandler
+import common.state as state
 
 class TCPServer :
 
@@ -37,14 +38,15 @@ class TCPServer :
             await server.wait_closed()
 
     async def command_server(self, websocket, path):
+        print(state.SERVER_NAME)
         async for command in websocket:
-            response = f"ng: '{command}' is not found"
+            response = f"[{state.SERVER_NAME}]ng: '{command}' is not found"
             if command == "exit":
                 # print("exit!")
                 for ws in self.clients.values():
                     await ws.close()
                 self.stop_event.set()
-                response = f"ok: '{command}' executed"
+                response = f"[{state.SERVER_NAME}]'{command}' executed: ok"
             await websocket.send(response)
 
     async def run_command_listener(self):
