@@ -8,6 +8,8 @@ services:
     ports:
       - "${LOGIN_SERVER_PORT}:${LOGIN_SERVER_PORT}"
     command: python -u -m login.login
+    networks:
+      - bridge-network
 
   game_server:
     build: ./docker/rs_server
@@ -18,6 +20,8 @@ services:
     ports:
       - "${GAME_SERVER_PORT}:${GAME_SERVER_PORT}"
     command: python -u -m game.game
+    networks:
+      - bridge-network
 
   api_server:
     build:
@@ -30,3 +34,9 @@ services:
     depends_on:
       - login_server
       - game_server
+    networks:
+      - bridge-network
+
+networks:
+  bridge-network:
+    driver: bridge
