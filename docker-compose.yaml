@@ -3,7 +3,8 @@ services:
     build: ./docker/rs_server
     container_name: login_server
     volumes:
-      - './src/rs_server:/work'
+      - '.:/work'
+    working_dir: /work/src/rs_server
     ports:
       - "${LOGIN_SERVER_PORT}:${LOGIN_SERVER_PORT}"
     command: python -u -m login.login
@@ -12,7 +13,8 @@ services:
     build: ./docker/rs_server
     container_name: game_server
     volumes:
-      - './src/rs_server:/work'
+      - '.:/work'
+    working_dir: /work/src/rs_server
     ports:
       - "${GAME_SERVER_PORT}:${GAME_SERVER_PORT}"
     command: python -u -m game.game

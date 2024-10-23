@@ -1,15 +1,10 @@
 from common.network.TCPServer import TCPServer 
 from common.network.PacketHandler import PacketHandler
-from dotenv import load_dotenv
 
 import asyncio
-import os
+import common.state as state
 
 async def main():
-
-    #load environment
-    load_dotenv()
-    server_port = os.getenv("GAME_SERVER_PORT") 
 
     # Initialize packet handler
     handlers = PacketHandler()
@@ -18,11 +13,10 @@ async def main():
     # no handlers at moment
 
     # Initialize server
-    server = TCPServer("0.0.0.0", server_port, handlers)
+    server = TCPServer("0.0.0.0", state.GAME_SERVER_PORT, handlers)
 
     await asyncio.gather(
         server.listen(),
-        server.run_command_listener()
     )
 
 if __name__ == "__main__" :

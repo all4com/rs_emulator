@@ -13,7 +13,6 @@ class TCPServer :
         self.stop_event = asyncio.Event()
         self.max_clients = 100
         self.clients = {}
-        self.listen()
 
     async def handler_server(self, reader, writer) -> None:
         addr = writer.get_extra_info('peername')
