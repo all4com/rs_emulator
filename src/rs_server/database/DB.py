@@ -1,49 +1,31 @@
-import sqlite3
+from pymongo import MongoClient
+from bson.objectid import ObjectId
+from pymongo.results import InsertOneResult
+import common.state as state
 
-class DB :
-
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(DB, cls).__new__(cls)
-        return cls._instance
+class DB:
 
     def __init__(self) -> None:
-        if not hasattr(self, 'initialized'):
-            self.database_path = "database/emulator.db"
-            self.connection = sqlite3.connect(self.database_path)
-            self.cursor = self.connection.cursor()
-            self.initialized = True
-            self.table = ""
+        self.database_path = f"mongodb://{state.DATABASE_USERNAME}:{state.DATABASE_PASSWORD}@{state.DATABASE_HOST}:{state.DATABASE_PORT}/?authSource=admin"
+        self.cursor = MongoClient(self.database_path)
+        self.database = self.cursor[state.DATABASE_NAME]
+        self.collection = self.database.admin  # Agora é um objeto de coleção
 
-    def set_table(self, table: str) :
-        self.table = table
+    def set_collection(self, collection_name: str):
+        self.collection = self.database.collection_name
 
     def insert(self, values: dict):
-        columns = ', '.join(values.keys())
-        placeholders = ', '.join(['?'] * len(values))
-        values = tuple(values.values())
-        query = f"INSERT INTO {self.table} ({columns}) VALUES ({placeholders})"
-        self.cursor.execute(query, values)
-        self.connection.commit()
-    
-    def delete(self, id: int):
-        query = f"DELETE FROM {self.table} WHERE id = ?"
-        self.cursor.execute(query, (id,))
-        self.connection.commit()
-    
-    def update(self, id: int, values: dict, conditions: dict):
-        set_str = ', '.join([f"{k} = ?" for k in values.keys()])
-        condition_str = ' AND '.join([f"{k} = ?" for k in conditions.keys()])
-        query = f"UPDATE {self.table} SET {set_str} WHERE {condition_str}"
-        self.cursor.execute(query, tuple(values.values()) + tuple(conditions.values()))
-        self.connection.commit()
-    
-    def select(self, fields: list, conditions: dict, limit: int = 1) :
-        fields_str = ', '.join(fields)
-        condition_str = ' AND '.join([f"{k} = ?" for k in conditions.keys()])
-        query = f"SELECT {fields_str} FROM {self.table} WHERE {condition_str} LIMIT {limit}"
-        self.cursor.execute(query, tuple(conditions.values()))
-        return self.cursor.fetchall()
+        return self.collection.insert_one(values)
 
+    def delete(self, id):
+        self.collection.delete_one({"_id": ObjectId(id)})
+
+    def update(self, id, values: dict):
+        self.collection.update_one({"_id": ObjectId(id)}, {"$set": values})
+
+    def select(self, fields: list = None, conditions: dict = {}, limit: int = 0):
+        projection = {field: 1 for field in fields} if fields else None
+        cursor = self.collection.find(conditions, projection)
+        if limit:
+            cursor = cursor.limit(limit)
+        return list(cursor)
