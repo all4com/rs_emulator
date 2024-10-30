@@ -25,25 +25,25 @@ class AUTH :
         # create a user for tests
         if buffer.username.decode("utf-8").startswith("create_") :
             username = buffer.username.decode("utf-8").split("create_").pop()
-            state.user_model.insert({"username": username, "password": buffer.password.decode("utf-8")})
+            state.user_model.insert({"username": username, "password": buffer.password.decode("utf-8"),"is_banned": 0, "banned_comment":"", "banned_data":""})
             print(username)
 
         input_username = buffer.username.decode("utf-8")
         input_password = buffer.password.decode("utf-8")
 
         # search user from database
-        result = state.user_model.getByUsername(input_username)
+        cond = {"username": input_username}
+        result = state.user_model.select(conditions=cond)
         
         result_login = RESULT_LOGIN()
 
         if len(result) > 0 :
-            account = result[0]
 
-            db_username = account[0]
-            db_password = account[1]
-            db_is_banned = account[2]
-            db_banned_comment = account[3]
-            db_banned_data = account[4]
+            db_username = result["username"]
+            db_password = result["password"]
+            db_is_banned = result["is_banned"]
+            db_banned_comment = result["banned_comment"]
+            db_banned_data = result["banned_data"]
 
             if db_is_banned == 1 :
                 print(db_banned_comment, db_banned_data, db_is_banned)
