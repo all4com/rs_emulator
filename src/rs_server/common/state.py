@@ -18,3 +18,5 @@ DATABASE_PORT = os.getenv("DATABASE_PORT")
 DATABASE_NAME = os.getenv("DATABASE_NAME")
 
 user_model = Users()
+
+

@@ -1,7 +1,8 @@
 from typing import Any
 from common.network.packets.regular import PACKET_BASE
 from ctypes import LittleEndianStructure, sizeof
-from ctypes.wintypes import WORD, CHAR, DWORD
+from ctypes.wintypes import WORD, CHAR, DWORD, UINT
+import random
 
 MAX_NUMBER_OF_SERVERS = 20
 WORLD_NAME_LENGTH = 32
@@ -110,35 +111,64 @@ class RESULT_LOGIN(PACKET_BASE):
 
 MAX_AVATAR_COUNT = 6
 NAME_LENGTH = 18
+IP_SIZE = 16
 
 class AVATAR_INFO(LittleEndianStructure):
-    _pack_ = 1
+    _pack_ = 2
     _fields_ = [
+        ("m_wAvatarIndex", WORD),
         ("m_strName", CHAR * NAME_LENGTH),
         ("m_wJob", WORD),
         ("m_wLevel", WORD),
-        ("m_aEquip", WORD * 2 * 3),
-        ("m_wLastVillage", WORD)
+        ("m_wWeapon", WORD),
+        ("m_wShield", WORD),
+        ("m_wArmor", WORD),
+        ("m_wLastField", WORD),
+        ("m_strIP", CHAR * IP_SIZE)
     ]
 
     def __init__(self) -> None:
-        self.m_strName = b'noname'
-        self.m_wJob = 0 * 2
-        self.m_wLevel = 1
-        for i in range(2):
-            for j in range(3):
-                self.m_aEquip[i][j] = 0xFFFF
-        self.m_wLastVillage = 0
+        self.m_wAvatarIndex = 0xFFFF
+        self.m_strName = b'\xFF' * NAME_LENGTH
+        self.m_wJob = 0xFFFF
+        self.m_wLevel = 0xFFFF
+        self.m_wWeapon = 0xFFFF
+        self.m_wShield = 0xFFFF
+        self.m_wArmor = 0xFFFF
+        self.m_wLastField = 0xFFFF
+        self.m_strIP = b'\x00' * IP_SIZE
+        
 
-class AVATAR_LIST(PACKET_BASE):
+class AVATAR_LIST(LittleEndianStructure):
     _pack_ = 1
     _fields_ = [
+        ("base", PACKET_BASE),
         ("security_code", WORD),
         ("avatar_info", AVATAR_INFO * MAX_AVATAR_COUNT)
     ]
     def __init__(self) -> None:
-        self.packet_length = sizeof(AVATAR_LIST)
-        self.packet_type = 0x1103
-        self.packet_serial = 0
+        self.base = PACKET_BASE()
+        self.base.packet_length = sizeof(AVATAR_LIST)
+        self.base.packet_type = 0x1103
+        self.base.packet_serial = 0
+        self.security_code = random.randint(1, 0x6FFF)
 
-        
+        self.avatar_info = (AVATAR_INFO * MAX_AVATAR_COUNT)()
+        for i in range(MAX_AVATAR_COUNT):
+            avatar = AVATAR_INFO()
+            self.avatar_info[i] = avatar
+
+
+class CREATE_AVATAR(LittleEndianStructure) :
+    _pack_ = 1
+    _fields_ = [
+        ("wJob", WORD),
+        ("wSecurityCode", WORD),
+        ("uiSecurityCodeRet", UINT),
+        ("strName", CHAR * NAME_LENGTH)
+    ]
+    def __init__(self):
+        self.wJob = 0
+        self.wSecurityCode = 0
+        self.uiSecurityCodeRet = 0
+        self.strName = b''

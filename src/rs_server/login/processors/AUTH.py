@@ -60,6 +60,5 @@ class AUTH :
                     avatar_list = AVATAR_LIST()
                     avatar_list_buffer = string_at(byref(avatar_list), sizeof(AVATAR_LIST()))
                     client_socket.write(avatar_list_buffer)
-                    
                     await client_socket.drain()
 

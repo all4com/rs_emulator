@@ -10,7 +10,7 @@ services:
       SERVER_NAME: login_server
     ports:
       - "${LOGIN_SERVER_PORT}:${LOGIN_SERVER_PORT}"
-    command: python -u -m login.login
+    command: watchmedo auto-restart --patterns="*.py" --recursive -- python -u -m login.login
     networks:
       - bridge-network
 
@@ -45,7 +45,7 @@ services:
       
   mongodb:
     image: mongo:latest
-    container_name: mongodb
+    container_name: database_server
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: "${DATABASE_USERNAME}"
@@ -54,6 +54,8 @@ services:
       - "${DATABASE_PORT}:27017"
     volumes:
       - ./docker/database:/data/db
+    networks:
+      - bridge-network
 
 networks:
   bridge-network:
