@@ -11,11 +11,9 @@ class SERVER_TYPE :
     @staticmethod
     async def intercept(client_socket: asyncio.StreamWriter, buffer: bytes) -> None :
         loginService = LoginService()
-        loginService.register_server("Prandel", 0)
-        loginService.register_server("Nacriema", 1)
-        loginService.register_server("Mundo da chibata", 3)
-        loginService.register_server("GVG World 1", 4)
-        loginService.register_server("Test Server", 5)
+        server_list = state.server_model.find()
+        for server in server_list:
+            loginService.register_server(server["name"], server["type"])
         
         packet = PACKET_SERVER_TYPE.from_buffer_copy(buffer)
         buff = loginService.get_server_list_buffer()

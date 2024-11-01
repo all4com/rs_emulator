@@ -1,4 +1,5 @@
 from database.models.users import Users
+from database.models.login_server import Servers
 from dotenv import load_dotenv
 import os
 
@@ -18,5 +19,5 @@ DATABASE_PORT = os.getenv("DATABASE_PORT")
 DATABASE_NAME = os.getenv("DATABASE_NAME")
 
 user_model = Users()
-
+server_model = Servers()
 

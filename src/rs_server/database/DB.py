@@ -27,3 +27,10 @@ class DB:
         if limit:
             cursor = cursor.limit(limit)
         return dict(cursor)
+
+    def find(self, projection=None,filter=None, sort=None):
+        res = []
+        cursor = self.collection.find(projection=projection,filter=filter,sort=sort)
+        for doc in cursor:
+            res.append(doc)
+        return res 
