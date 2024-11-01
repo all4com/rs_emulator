@@ -24,4 +24,4 @@ async def send_command_to_websocket(command: str, server: str) -> str:
 async def send_command(cmd: str, srv: str = ""):
     # WebSocket経由でコマンドを送信し、レスポンスを取得
     response = await send_command_to_websocket(cmd, srv)
-    return {"result": response}
+    return response

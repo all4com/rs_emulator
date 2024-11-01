@@ -4,6 +4,8 @@ from common.helpers import print_binary
 from common.network.TCPClient import TCPClient
 from common.network.PacketHandler import PacketHandler
 import common.state as state
+from datetime import datetime
+import json
 
 class TCPServer :
 
@@ -38,15 +40,12 @@ class TCPServer :
             await server.wait_closed()
 
     async def command_server(self, websocket, path):
-        print(state.SERVER_NAME)
+        data = {"server":state.SERVER_NAME, "result": "ng", "time": datetime.now().strftime("%Y%m%d%H%M%S")}	# 任意のdict型変数
         async for command in websocket:
-            response = f"[{state.SERVER_NAME}]ng: '{command}' is not found"
             if command == "exit":
-                # print("exit!")
-                for ws in self.clients.values():
-                    await ws.close()
                 self.stop_event.set()
-                response = f"[{state.SERVER_NAME}]'{command}' executed: ok"
+                data["result"] = "OK"
+            response = json.dumps(data)
             await websocket.send(response)
 
     async def run_command_listener(self):
